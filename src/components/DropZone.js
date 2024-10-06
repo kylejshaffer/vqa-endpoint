@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Button, Image } from '@chakra-ui/react';
+import { Button, Image, VStack } from '@chakra-ui/react';
 import { LMServiceContext } from '../context/LMServiceContext';
 
 function FileDropzone() {
@@ -33,14 +33,14 @@ function FileDropzone() {
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   return (
-    <section>
+    <VStack w="xl" m="auto" h="full" borderWidth="1px" roundedTop="lg">
       <div {...getRootProps()}>
         <input {...getInputProps()}/>
         {files.length === 0 ? <p>Drag Files Here</p> : null}
       </div>
         {files.length > 0 ? <Button onClick={setupImage}>Upload Image</Button> : null}
-        {files.length > 0 ? <Image src={files[0].preview} width="60%" alt="input-image"/> : undefined}
-    </section>
+        {files.length > 0 ? <Image src={files[0].preview} width="60%" alt="input-image"/> : null}
+    </VStack>
   );
 }
 

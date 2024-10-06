@@ -1,6 +1,6 @@
 import { Flex, Text } from '@chakra-ui/react';
 
-const Message = (props) => {
+function Message(props) {
     return (
       <Flex
         p={4}
