@@ -1,5 +1,5 @@
-import { useContext, useRef, useState } from 'react';
-import { Button, Flex, HStack, Input, Spinner, VStack } from "@chakra-ui/react";
+import { useContext, useEffect, useRef, useState } from 'react';
+import { Box, Button, HStack, Input, Spinner, VStack } from "@chakra-ui/react";
 import { LMServiceContext } from '../context/LMServiceContext';
 import Message from "./Message";
 
@@ -8,6 +8,13 @@ function ChatPane() {
     const [messageList, setMessageList] = useState([]);
     const lmApp = useContext(LMServiceContext);
 
+    const AlwaysScrollToBottom = () => {
+        const elementRef = useRef();
+        useEffect(() => elementRef.current.scrollIntoView());
+        return <div ref={elementRef} />;
+      };
+    
+
     const getResponse = async () => {
         if (!userInput.current.value) {
           alert("You need to input some text!");
@@ -15,7 +22,7 @@ function ChatPane() {
         const userChat = userInput.current.value;
         userInput.current.value = "";
         setMessageList((prevList) => [...prevList, {agent: "user", text: userChat}]);
-        const response = await lmApp.predict("/respond", [
+        /* const response = await lmApp.predict("/respond", [
             userChat,
             [], // undefined  in 'Chat with MiniCPM-V 2.0' Chatbot component		
             "Sampling", // string  in 'Decode Type' Radio component		
@@ -26,40 +33,33 @@ function ChatPane() {
             100, // number (numeric value between 0 and 200) in 'Top K' Slider component		
             0.7, // number (numeric value between 0 and 2) in 'Temperature' Slider component
         ]);
-        const botResponse = response.data[1][0][1];
-        // const botResponse = "I am a chatbot.";
+        const botResponse = response.data[1][0][1]; */
+        const botResponse = "I am a chatbot.";
         setMessageList((prevList) => [...prevList, {agent: "bot", text: botResponse}]);
         console.log(messageList);
       }
 
     return (
-        <Flex w="xl" m="auto" h="full" borderWidth="1px" roundedTop="lg">
+        <Box>
             <VStack
-             px={4}
-             py={8}
-             overflow="auto"
-             flex={1}
-             css={{
-               '&::-webkit-scrollbar': {
-                 width: '4px',
-               },
-               '&::-webkit-scrollbar-track': {
-                 width: '6px',
-               },
-               '&::-webkit-scrollbar-thumb': {
-                 background: '#d5e3f7',
-                 borderRadius: '24px',
-               },
-             }}>
+                px={4}
+                py={8}
+                overflow="auto"
+                flex={1}
+                h="66vh"
+                w="xl"
+                borderWidth="1px"
+                roundedTop="lg"
+                >
                 <Message text="Upload an image to get started." actor="bot" />
                 {messageList.length > 0 ? messageList.map((m) => <Message text={m.text} actor={m.agent}/>) : null}
-                <HStack width="100%" p={4} bg="gray.100">
-                    <Input bg="white" placeholder="Enter your text" ref={userInput} />
-                    {console.log(messageList.slice(-1))}
-                    {messageList.slice(-1).agent === "bot" ? <Spinner thickness='4px' speed='0.65s' emptyColor='gray.200' color='blue.500' size='xl'/> : <Button colorScheme="blue" onClick={getResponse}>Send</Button>}
-                </HStack>
+                <AlwaysScrollToBottom />
             </VStack>
-        </Flex>
+            <HStack width="100%" p={4} bg="gray.100" position="absoute">
+                <Input bg="white" placeholder="Enter your text" ref={userInput} />
+                {messageList.slice(-1).agent === "bot" ? <Spinner thickness='4px' speed='0.65s' emptyColor='gray.200' color='blue.500' size='xl'/> : <Button colorScheme="blue" onClick={getResponse}>Send</Button>}
+            </HStack>
+        </Box>
     )
 }
 

@@ -1,10 +1,12 @@
 import React, { useCallback, useContext, useState } from 'react';
+import { BsCloudUpload } from "react-icons/bs";
 import { useDropzone } from 'react-dropzone';
-import { Button, Image, VStack } from '@chakra-ui/react';
+import { Button, Image, Input, Spinner, Text, VStack } from '@chakra-ui/react';
 import { LMServiceContext } from '../context/LMServiceContext';
 
 function FileDropzone() {
   const [files, setFiles] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
   const lmApp = useContext(LMServiceContext);
 
   const setupImage = async () => {
@@ -14,7 +16,7 @@ function FileDropzone() {
         const result = await lmApp.predict("/upload_img", [
           files[0], 	// blob in 'Upload an image to start' Image component		
           [], // undefined  in 'Chat with MiniCPM-V 2.0' Chatbot component
-        ])
+        ]).then(setIsLoaded(true));
         console.log(result);
         console.log("Image uploaded...");
     }
@@ -32,14 +34,29 @@ function FileDropzone() {
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
+  let innerComp;
+  if (isLoaded) {
+    innerComp = (
+        <>
+        <Image src={files[0].preview} width="65%" alt="uploaded-image"/>
+        <Button onClick={setupImage}>Upload Image</Button>
+        </>
+    )
+  } else if (files.length === 0) {
+    innerComp = (
+        <>
+        <Input {...getInputProps()}/>
+        <Text>Drag or Click Here to Upload Image</Text>
+        <BsCloudUpload size='100px' />
+        </>
+    )
+  }
+
   return (
-    <VStack w="xl" m="auto" h="full" borderWidth="1px" roundedTop="lg">
-      <div {...getRootProps()}>
-        <input {...getInputProps()}/>
-        {files.length === 0 ? <p>Drag Files Here</p> : null}
-      </div>
-        {files.length > 0 ? <Button onClick={setupImage}>Upload Image</Button> : null}
-        {files.length > 0 ? <Image src={files[0].preview} width="60%" alt="input-image"/> : null}
+    <VStack w="xl" m="auto" h="75vh" borderWidth="1px" roundedTop="lg">
+        <VStack {...getRootProps()} padding="10%" marginTop="5%">
+            {innerComp}
+        </VStack>
     </VStack>
   );
 }
