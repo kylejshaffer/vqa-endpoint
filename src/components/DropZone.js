@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useState } from 'react';
 import { BsCloudUpload } from "react-icons/bs";
 import { useDropzone } from 'react-dropzone';
-import { Button, Image, Input, Spinner, Text, VStack } from '@chakra-ui/react';
+import { Image, Input, Spinner, Text, VStack } from '@chakra-ui/react';
 import { LMServiceContext } from '../context/LMServiceContext';
 
 function FileDropzone() {
@@ -13,10 +13,16 @@ function FileDropzone() {
     if (files) {
         console.log("Got the image");
         console.log(files[0]);
-        const result = await lmApp.predict("/upload_img", [
+        
+        /* const result = await lmApp.predict("/upload_img", [
           files[0], 	// blob in 'Upload an image to start' Image component		
           [], // undefined  in 'Chat with MiniCPM-V 2.0' Chatbot component
-        ]).then(setIsLoaded(true));
+        ]);
+        setIsLoaded(true); */
+        setTimeout(() => {
+            setIsLoaded(true);
+        }, 1000);
+        const result = "IMG";
         console.log(result);
         console.log("Image uploaded...");
     }
@@ -36,24 +42,29 @@ function FileDropzone() {
 
   let innerComp;
   if (isLoaded) {
+    console.log("image is loaded - should be rendering image and upload button...")
     innerComp = (
         <>
-        <Image src={files[0].preview} width="65%" alt="uploaded-image"/>
-        <Button onClick={setupImage}>Upload Image</Button>
+        <Image src={files[0].preview} width="80%" alt="uploaded-image"/>
         </>
     )
   } else if (files.length === 0) {
+    console.log("No files loaded - should be rendering upload stack...")
     innerComp = (
         <>
         <Input {...getInputProps()}/>
         <Text>Drag or Click Here to Upload Image</Text>
-        <BsCloudUpload size='100px' />
+        <BsCloudUpload className="upload-icon" />
         </>
     )
+  } else if (!isLoaded && files.length > 0) {
+    console.log("File not yet loaded to API, but pushed to files - should be spinning...")
+    innerComp = <Spinner size="xl" />
+    setupImage();
   }
 
   return (
-    <VStack w="xl" m="auto" h="75vh" borderWidth="1px" roundedTop="lg">
+    <VStack w="xl" m="auto" h="75vh" borderWidth="1px" roundedTop="lg" backgroundColor='white'>
         <VStack {...getRootProps()} padding="10%" marginTop="5%">
             {innerComp}
         </VStack>

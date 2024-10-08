@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Box, Button, HStack, Input, Spinner, VStack } from "@chakra-ui/react";
+import { Box, Button, HStack, Input, Skeleton, VStack } from "@chakra-ui/react";
 import { LMServiceContext } from '../context/LMServiceContext';
 import Message from "./Message";
 
@@ -34,8 +34,10 @@ function ChatPane() {
             0.7, // number (numeric value between 0 and 2) in 'Temperature' Slider component
         ]);
         const botResponse = response.data[1][0][1]; */
-        const botResponse = "I am a chatbot.";
-        setMessageList((prevList) => [...prevList, {agent: "bot", text: botResponse}]);
+        setTimeout(() => {
+            const botResponse = "I am a chatbot.";
+            setMessageList((prevList) => [...prevList, {agent: "bot", text: botResponse}]);
+        }, 2000);
         console.log(messageList);
       }
 
@@ -50,6 +52,7 @@ function ChatPane() {
                 w="xl"
                 borderWidth="1px"
                 roundedTop="lg"
+                backgroundColor='white'
                 >
                 <Message text="Upload an image to get started." actor="bot" />
                 {messageList.length > 0 ? messageList.map((m) => <Message text={m.text} actor={m.agent}/>) : null}
@@ -57,7 +60,7 @@ function ChatPane() {
             </VStack>
             <HStack width="100%" p={4} bg="gray.100" position="absoute">
                 <Input bg="white" placeholder="Enter your text" ref={userInput} />
-                {messageList.slice(-1).agent === "bot" ? <Spinner thickness='4px' speed='0.65s' emptyColor='gray.200' color='blue.500' size='xl'/> : <Button colorScheme="blue" onClick={getResponse}>Send</Button>}
+                <Button colorScheme="blue" onClick={getResponse}>Send</Button>
             </HStack>
         </Box>
     )
